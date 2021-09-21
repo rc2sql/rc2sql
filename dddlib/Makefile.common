@@ -1,0 +1,53 @@
+####################################################################
+#
+#      Common makefile for all DDD related source files
+#
+#  (c) Copyright 1999 Jesper Moeller
+#      The IT University in Copenhagen,
+#      Glentevej 67, DK-2400 Copenhagen, Denmark.
+#      jm@it.edu
+#      ALL RIGHTS RESERVED
+#
+####################################################################
+
+
+#######################  Compiler options  #########################
+
+# If SEMANTICS is INTEGER_SEMANTICS, all variables are integer-valued.
+# Otherwise variables are real-valued.
+#SEMANTICS=-DINTEGER_SEMANTICS
+
+# If CSTR_SOLVER is INCR_BELLMANFORD, the constraint solver uses an
+# incremental version of the Bellman-Ford algorithm.  In some cases this
+# is better than the standand Bellman-Ford algorithm, but not always.
+CSTR_SOLVER=-DINCR_BELLMANFORD
+
+# Incomment the first definition below to avoid assertion check and to
+# optimize code OR incomment the second definition below to produce
+# debug information
+CCDEBUG=-DNDEBUG -O2
+#CCDEBUG=-g
+
+# General C options
+CCOPTS=-Wall -Winline -Wshadow -Wstrict-prototypes -fno-operator-names -fPIC
+CFLAGS+=$(SEMANTICS) $(CSTR_SOLVER) $(CCDEBUG) $(CCOPTS)
+
+#######################  Standard stuff  ###########################
+
+#	The shell
+SHELL=		/bin/bash
+
+#	Command to invoke your C and C++ compiler:
+CC=	gcc	
+CPP=	g++
+
+##########################  Conversions   ########################
+
+.SUFFIXES:	.c .cpp .o
+
+.cpp.o:
+	$(CPP) $(CFLAGS) -c $<
+
+.c.o:
+	$(CC) $(CFLAGS) -c $<
+

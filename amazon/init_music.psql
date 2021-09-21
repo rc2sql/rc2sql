@@ -1,0 +1,15 @@
+DROP TABLE IF EXISTS tbl_T;
+CREATE TABLE tbl_T (t INT);
+INSERT INTO tbl_T VALUES (1);
+DROP TABLE IF EXISTS tbl_P0A1;
+CREATE TABLE tbl_P0A1 (x0 INT);
+COPY tbl_P0A1 FROM '/home/rcsql/amazon/Musical_Instruments_B.csv' CSV;
+DROP TABLE IF EXISTS tbl_P0A2;
+CREATE TABLE tbl_P0A2 (x0 INT, x1 INT);
+COPY tbl_P0A2 FROM '/home/rcsql/amazon/Musical_Instruments_P.csv' CSV;
+DROP TABLE IF EXISTS tbl_P0A3;
+CREATE TABLE tbl_P0A3 (x0 INT, x1 INT, x2 INT);
+COPY tbl_P0A3 FROM '/home/rcsql/amazon/Musical_Instruments_R.csv' CSV;
+DROP TABLE IF EXISTS tbl_P1A3;
+CREATE TABLE tbl_P1A3 (x0 INT, x1 INT, x2 INT);
+COPY tbl_P1A3 FROM '/home/rcsql/amazon/Musical_Instruments_T.csv' CSV;

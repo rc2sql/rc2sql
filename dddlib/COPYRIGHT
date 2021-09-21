@@ -1,0 +1,7 @@
+The DDD library.  Provides the basic functionality for DDDs.
+Copyright (C) Configit A/S, Kristianiagade 7, DK-2100 Copenhagen O
+Developed by Jesper Moller and Jakob Lichtenberg
+
+For help on how to use the library, please see the examples in the
+cpp_examples or tgc folders.
+
