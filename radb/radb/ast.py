@@ -170,11 +170,9 @@ class FuncValExpr(ValExpr):
             ', '.join(arg.info() for arg in self.args) +\
             literal(sym.PAREN_R)
     def sql(self, relexpr):
-        return ("" if self.func == "tup" else self.func) +\
-            (literal(sym.PAREN_L) if not (self.func == "tup" and self.cmdargs.mysql) else "") +\
-            ("DISTINCT " if self.func == "COUNT" else "") +\
-            (' + "," + ' if self.func == "tup" and self.cmdargs.run else ', ').join(arg.sql(relexpr) for arg in self.args) +\
-            (literal(sym.PAREN_R) if not (self.func == "tup" and self.cmdargs.mysql) else "")
+        return self.func + literal(sym.PAREN_L) +\
+            ', '.join(arg.sql(relexpr) for arg in self.args) +\
+            literal(sym.PAREN_R)
 
 class AttrRef(ValExpr):
     def __init__(self, rel, name):
@@ -452,8 +450,8 @@ class Project(RelExpr):
         for i, line in enumerate(self.inputs[0].info()):
             yield ('\\_' if i == 0 else '  ') + line
     def query(self):
-        return 'SELECT {}{} FROM {}'\
-               .format(("DISTINCT " if not self.cmdargs.all else ""), ', '.join(attr.sql(self) for attr in self.attrs),
+        return 'SELECT DISTINCT {} FROM {}'\
+               .format(', '.join(attr.sql(self) for attr in self.attrs),
                        self.inputs[0].type.sql_rel())
 
 class Select(RelExpr):
@@ -486,7 +484,7 @@ class Select(RelExpr):
         for i, line in enumerate(self.inputs[0].info()):
             yield ('\\_' if i == 0 else '  ') + line
     def query(self):
-        return 'SELECT * FROM {} WHERE {}'\
+        return 'SELECT DISTINCT * FROM {} WHERE {}'\
                .format(self.inputs[0].type.sql_rel(),
                        self.cond.sql(self))
 
@@ -815,7 +813,7 @@ class LeftJoin(RelExpr):
             for i, (a0, a1) in enumerate(zip(self.inputs[0].type.attrs, self.inputs[1].type.attrs)):
                 if a0.type != a1.type or a0.name != a1.name:
                     is_diff = False
-        if is_diff and not self.cmdargs.mysql and not self.cmdargs.all:
+        if is_diff and not self.cmdargs.mysql:
             return 'SELECT * FROM {} {} SELECT * FROM {}'\
                    .format(self.inputs[0].type.sql_rel(),
                            'EXCEPT',
@@ -888,9 +886,9 @@ class SetOp(RelExpr):
         # interestingly, in the SQL below, parentheses around the two
         # SELECT subqueries are not needed, and SQLite in fact would
         # not like them:
-        return 'SELECT * FROM {} {}{} SELECT * FROM {}'\
+        return 'SELECT * FROM {} {} SELECT * FROM {}'\
                .format(self.inputs[0].type.sql_rel(),
-                       self.sql_op(), (" ALL" if self.cmdargs.all and not isinstance(self, Diff) else ""),
+                       self.sql_op(),
                        self.inputs[1].type.sql_rel())
 
 class Union(SetOp):

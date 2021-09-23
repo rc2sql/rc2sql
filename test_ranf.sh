@@ -72,7 +72,7 @@ do
     echo "${d}(p-v): ${pref}/${s}" >> log.txt
   fi
 
-  for conf in "-a -m" "-a" "-m" ""
+  for conf in "-m" ""
   do
     conff="$(echo ${conf} | sed "s/[ -]//g")"
     timeout "${to}" bash -c "/home/rcsql/rw_sqlite.sh ${pref} ${s} ${conf}" > "${pref}.${conff}.${s}l"

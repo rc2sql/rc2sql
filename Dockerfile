@@ -26,7 +26,7 @@ RUN cd amazon; wget http://deepyeti.ucsd.edu/jianmo/amazon/categoryFiles/Musical
 RUN cd amazon; wget http://deepyeti.ucsd.edu/jianmo/amazon/metaFiles2/meta_Musical_Instruments.json.gz
 
 # local files
-ADD rewriting ${WDIR}
+ADD . ${WDIR}
 USER root
 RUN chmod 755 /home/rcsql
 RUN chown -R rcsql:rcsql *

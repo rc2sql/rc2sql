@@ -171,10 +171,10 @@ let ra_of_fmla string_of_val string_of_var =
         let xs = Misc.diff fv [c] in
         let sxs = string_of_list string_of_var xs in
         let svs = string_of_list string_of_var vs in
-        (match xs with [] -> "\\rename_{" ^ sc ^ "} \\aggr_{COUNT(tup(" ^ svs ^ "))} (" ^ aux f ^ ")"
+        (match xs with [] -> "\\rename_{" ^ sc ^ "} \\aggr_{COUNT(1)} (" ^ aux f ^ ")"
         | _ -> "\\project_{" ^ string_of_list string_of_var fv ^ "} \\rename_{" ^
           sxs ^ ", " ^ sc ^ "} \\aggr_{" ^
-          sxs ^ ": COUNT(tup(" ^ svs ^ "))} (" ^ aux f ^ ")")
+          sxs ^ ": COUNT(1)} (" ^ aux f ^ ")")
   in aux
 
 (* Figure 10 *)

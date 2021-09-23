@@ -13,6 +13,14 @@ VGTrans has the same interface as RC2SQL.
 
 ---
 
+# News:
+
+- September 23: the evaluation results have been updated (see `paper.pdf`)
+  after an optimization in the translation of RA expressions to SQL
+  (replacing `COUNT(DISTINCT ...)` by `COUNT(...)` and using `SELECT DISTINCT ...`)
+
+---
+
 # Directory Structure:
 
 - `paper.pdf` - paper on RC2SQL
@@ -201,7 +209,8 @@ used to plot Figure 6 and 7.
 
 A PDF with the evaluation results can be obtained by executing
 ```
-pdflatex main.tex
+$ ./bold.sh
+$ pdflatex main.tex
 ```
 
 The timeout for the individual experiments can be set
@@ -221,31 +230,11 @@ in the script `exps_large.sh`.
 
 # Query Cost
 
-The following sequence of steps computes the query cost for RC2SQL and VGT
-on the query Q^{susp} and dataset MI on which RC2SQL performs worse than VGT:
-```
-$ ./exps_susp.sh > exps_susp.tex
-$ psql < z_7.psql
-$ python3 cnt.py z_7.apsqlfin | psql
-   cost
-----------
- 64277358
-(1 row)
-
-$ python3 cnt.py z_7.vapsqlfin | psql
-   cost
-----------
- 76784956
-(1 row)
-```
-Note that the queries `*inf` are FALSE for Q^{susp} and can thus be neglected in terms of their cost.
-The query cost for VGT is actually higher than that for RC2SQL by a factor of 1.2x although
-PostrgreSQL evaluates the query produced by VGT faster by a factor of 0.9x.
-
 To confirm that the count aggregations optimize the inefficiency of VGT\-
 compared to RC2SQL\-, we compute the query cost for Q^{susp} on a Data Golf structure
 with `n = 20`. We choose this size of the Data Golf structure
 to be able to compute the query cost within a reasonable time.
+Note that the queries `*inf` are FALSE for Q^{susp} and can thus be neglected in terms of their cost.
 
 ```
 $ ./amazon/gen_test "/home/rcsql/z_0" 1 0 20 2 1 0
@@ -288,7 +277,7 @@ These results support our observations in Example 22.
 
 Furthermore, the folder `nf/` contains an empirical comparison of `LEFT JOIN` vs `EXCEPT`.
 
-Please refer to the `README.md` file in the folder for more details.
+Please refer to the `README.md` file in the folder `nf/` for more details.
 
 ---
 
@@ -301,16 +290,17 @@ Here we use `n = 10` as the script `test_ranf.sh` cannot be used with a higher v
 
 The output (in the file `log.txt`)
 ```
-RE: /home/rcsql/z_14_4_2_1_10_2_1_2/vam
-RE: /home/rcsql/z_14_4_2_1_10_2_1_4/vam
-DIFF(p-m): /home/rcsql/z_14_4_2_1_10_2_1_5/a
-RE: /home/rcsql/z_14_4_2_1_10_2_1_7/vam
-RE: /home/rcsql/z_14_4_2_1_10_2_1_9/vam
+RE: /home/rcsql/z_14_4_2_1_10_2_1_2/am
+RE: /home/rcsql/z_14_4_2_1_10_2_1_5/am
+RE: /home/rcsql/z_14_4_2_1_10_2_1_7/vsm
+DIFF(p-m): /home/rcsql/z_14_4_2_1_10_2_1_9/va
 ```
 reports 5 inconsistencies between MySQL and PostgreSQL.
 The verdict `DIFF` stands for unsound output while `RE` denotes a runtime error.
-For instance, the last line reports a runtime error with MySQL (suffix `m`)
-on the optimized query (infix `a`) produced by VGT (prefix `v`).
+For instance, the first line reports a runtime error in MySQL (suffix `m`)
+on the optimized query (prefix `a`) and the last line reports unsound output
+of either PostgreSQL or MySQL (`p-m`) on the optimized query (suffix `a`)
+produced by VGT (prefix `v`).
 `DIFF(p-m)` denotes an output inconsistency between PostgreSQL and MySQL.
 `DIFF(p-*.l)` denotes an output inconsistency between PostgreSQL and SQLite.
 `DIFF(p-v)` denotes an output inconsistency between PostgreSQL and VeriMon.
