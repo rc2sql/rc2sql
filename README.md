@@ -16,13 +16,14 @@ This repository is the supplementary material for the paper
 
 Practical Relational Calculus Query Evaluation
 
-accepted at ICDT'22.
+accepted at ICDT'22. In particular, it contains the extended report on RC2SQL.
 
 ---
 
 # News:
 
-- December 19: added press-the-button scripts for RC query evaluation
+- December 19: added press-the-button scripts for RC query evaluation and extended report
+  on RC2SQL
 - September 23: the evaluation results have been updated (see `paper.pdf`)
   after an optimization in the translation of RA expressions to SQL
   (replacing `COUNT(DISTINCT ...)` by `COUNT(...)` and using `SELECT DISTINCT ...`)
@@ -31,7 +32,7 @@ accepted at ICDT'22.
 
 # Directory Structure:
 
-- `paper.pdf` - paper on RC2SQL
+- `paper.pdf` - extended report on RC2SQL
 - `Dockerfile` - Dockerfile for this supplementary material
 - `test_all.sh` - script to run correctness tests of query evaluation
 - `run.sh` - script to run experiments
