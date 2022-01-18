@@ -62,7 +62,7 @@ let rec fv_fmla = function
 
 let fv_fmlas fs = Misc.union' (List.map fv_fmla fs)
 
-(* Figure 11 *)
+(* Figure 12 *)
 let rec ranf = function
   | False -> true
   | True -> true
@@ -177,7 +177,7 @@ let ra_of_fmla string_of_val string_of_var =
           sxs ^ ": COUNT(1)} (" ^ aux f ^ ")")
   in aux
 
-(* Figure 10 *)
+(* Figure 11 *)
 let rec cp = function
   | False -> False
   | True -> True
@@ -216,7 +216,7 @@ let fresh_var fv =
     else var
   in fresh_var_rec 0
 
-(* Definition 20 *)
+(* Definition 23 *)
 let rec rename i j f =
   let rename_var i j v = if i = v then j else v in
   let rec rename_trm i j = function
@@ -365,7 +365,7 @@ let rec is_srnf = function
   | Exists (v, f) -> List.mem v (fv_fmla f) && is_srnf f
   | _ -> true
 
-(* Figure 13 *)
+(* Figure 14 *)
 let rec srnf = function
   | Neg (Neg f') -> srnf f'
   | Neg (Disj (f, g)) -> srnf (Conj (Neg f, Neg g))
@@ -376,6 +376,7 @@ let rec srnf = function
     (match srnf f' with
     | Disj (f'', g'') -> srnf (Conj (Neg (exists vs f''), Neg (exists vs g'')))
     | f'' -> Neg (exists vs f''))
+  | Neg f' -> Neg (srnf f')
   | Disj (f, g) -> disj (List.map srnf (flatten_disj (Disj (f, g))))
   | Conj (f, g) -> conj (List.map srnf (flatten_conj (Conj (f, g))))
   | Exists (v, f) ->
@@ -396,6 +397,7 @@ let rec ssrnf = function
     (match ssrnf f' with
     | Disj (f'', g'') -> ssrnf (Conj (Neg (exists vs f''), Neg (exists vs g'')))
     | f'' -> Neg (exists vs f''))
+  | Neg f' -> Neg (ssrnf f')
   | Disj (f, g) -> disj (List.map ssrnf (flatten_disj (Disj (f, g))))
   | Conj (f, g) ->
     let (fps, feqs, fnexs, fns) = splitconj (flatten_conj (Conj (f, g))) in
@@ -524,7 +526,7 @@ let agg_of_fmla cost f =
       disj (List.map (fun f'' -> ms (agg1 cost vs f'')) (flatten_disj (aux f')))
   in ssrnf (aux (ms f))
 
-(* Definition 21 *)
+(* Definition 24 *)
 let var_bot x f =
   let rec aux = function
     | False -> False
@@ -592,7 +594,7 @@ let rec cov v = function
                                        (map_nested (rename v' v) (gen v' f))
                                      else [List.map (proj v') cs]) (cov v f))
 
-(* Figure 8 *)
+(* Figure 9 *)
 let rec vgen v = function
   | False -> [[]]
   | True -> []
@@ -609,7 +611,7 @@ let rec vgen v = function
   | Exists (v', f) -> if v = v' then []
                       else map_nested (proj v') (vgen v f)
 
-(* Figure 8 *)
+(* Figure 9 *)
 let rec con v = function
   | False -> [[]]
   | True -> [[]]
@@ -718,7 +720,7 @@ let evaluable f =
     | Exists (v, f) -> (match con v f with [] -> false | _ -> aux f)
   in aux f && List.for_all (fun v -> match vgen v f with [] -> false | _ -> true) (fv_fmla f)
 
-(* Figure 14 *)
+(* Figure 15 *)
 let srra cost q =
   let opt_srra = opt_choice (fun (f, rs) -> cost f) in
   let rec aux q rs =
@@ -733,13 +735,13 @@ let srra cost q =
       let rss' = List.filter (fun rs' -> sr (disj (List.map (fun f -> rconj (f :: rs')) fs))) (powset rs) in
       opt_srra (List.map (fun rs' -> (disj (List.map (fun f -> let (f', _) = aux (rconj (f :: rs')) [] in f') fs), rs')) rss')
     | Conj _ ->
-      let fs = flatten_conj q in
+      let fs = flatten_conj q @ rs in
       let fps = List.filter (fun f -> match f with Eq (v, Var v') -> false | Neg _ -> false | _ -> true) fs in
       let feqs = List.filter (fun f -> match f with Eq (v, Var v') -> true | _ -> false) fs in
       let fns = List.filter (fun f -> match f with Neg (Eq (v, Var v')) -> false | Neg _ -> true | _ -> false) fs in
       let fneqs = List.filter (fun f -> match f with Neg (Eq (v, Var v')) -> true | _ -> false) fs in
-      let fps' = List.map (fun f -> (aux f (Misc.union rs (Misc.diff (Misc.union fps feqs) [f])), f)) fps in
-      let fns' = List.map (fun f -> match f with Neg f -> let (f', _) = aux f (Misc.union rs (Misc.union fps feqs)) in Neg f') fns in
+      let fps' = List.map (fun f -> (aux f (Misc.diff (Misc.union fps feqs) [f]), f)) fps in
+      let fns' = List.map (fun f -> match f with Neg f -> let (f', _) = aux f (Misc.union fps feqs) in Neg f') fns in
       let fpss' = List.filter (fun fs' -> Misc.subset fps (Misc.union' (List.map (fun ((f', rs'), f) -> Misc.union rs' [f]) fs'))) (powset fps') in
       opt_srra (List.map (fun fs' -> (sconj (List.map (fun ((f', rs'), f) -> f') fs' @ feqs @ fns' @ fneqs),
                                       Misc.union' (List.map (fun ((f', rs'), f) -> Misc.inter rs' rs) fs'))) fpss')

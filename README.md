@@ -20,16 +20,6 @@ accepted at ICDT'22. In particular, it contains the extended report on RC2SQL.
 
 ---
 
-# News:
-
-- December 19: added press-the-button scripts for RC query evaluation and extended report
-  on RC2SQL
-- September 23: the evaluation results have been updated (see `paper.pdf`)
-  after an optimization in the translation of RA expressions to SQL
-  (replacing `COUNT(DISTINCT ...)` by `COUNT(...)` and using `SELECT DISTINCT ...`)
-
----
-
 # Directory Structure:
 
 - `paper.pdf` - extended report on RC2SQL
@@ -52,9 +42,9 @@ and their translation to SQL by comparing PostgreSQL, MySQL, SQLite, and VeriMon
 - `cnt.py` - script converting an SQL query produced by *radb*
 into an SQL query computing its *query cost*
 - `functions.sh` - helper bash functions
-- `amazon/` - contains scripts for experiments in Figure 7
+- `amazon/` - contains scripts for experiments in Figure 8
 - `examples/` - example queries from this README
-- `nf/` - benchmark for Example 22 and Section E.3.
+- `nf/` - benchmark for Example 25 and Section E.3.
 - `src/` - RC2SQL's source code (in OCaml)
 - `tools/` - tools for generating pseudorandom queries, Data Golf structures,
 and for checking the translation's correctness and Data Golf properties
@@ -226,10 +216,10 @@ To reproduce the experiments from the paper, run
 $ ./run.sh
 ```
 
-The individual experiments are described in Section 5.
+The individual experiments are described in Section 6.
 After the script `run.sh` finishes,
 the results are contained in the files `exps_*.tex`
-used to plot Figure 6 and 7.
+used to plot Figure 7 and 8.
 
 A PDF with the evaluation results can be obtained by executing
 ```
@@ -239,16 +229,16 @@ $ pdflatex main.tex
 
 The timeout for the individual experiments can be set
 in the scripts `exps_*.sh`. With the unmodified timeouts of 300s and 600s, respectively,
-the script would take overnight to recreate the tables.
+the script would take roughly 12 hours to recreate the tables.
 
 Note. If you want to run the benchmarks with a tool
 that is omitted in the paper because the tool always times out or crashes,
 please uncomment the corresponding line in the script `exps_*.sh`, e.g.,
-to execute LDDs in the experiment LARGE, uncomment the following line
+to execute LDDs in the experiment MEDIUM, uncomment the following line
 ```
 #line "\\ldd" run04LDD
 ```
-in the script `exps_large.sh`.
+in the script `exps_medium.sh`.
 
 ---
 
@@ -297,7 +287,7 @@ $ python3 cnt.py z_0.vspsqlfin | psql    # cost of VGT-
 
 Folder `nf/` contains empirical results of our comparison of safe-range normal form (SRNF) and existential normal form (ENF).
 
-These results support our observations in Example 22.
+These results support our observations in Example 25.
 
 Furthermore, the folder `nf/` contains an empirical comparison of `LEFT JOIN` vs `EXCEPT`.
 
